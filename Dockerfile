@@ -2,19 +2,22 @@ FROM oddlid/arch-desktop
 
 ENV LANG en_US.utf8
 # Set up AUR repo
-RUN sudo -u yaourt rm -rf /tmp/package-query && \
-    sudo -u yaourt rm -rf /tmp/yaourt && \
-    cd /tmp && \
-    sudo -u yaourt git clone https://aur.archlinux.org/package-query.git && \
-    cd /tmp/package-query && \
-    yes | sudo -u yaourt makepkg -si && \
-    cd .. && \
-    sudo -u yaourt git clone https://aur.archlinux.org/yaourt.git && \
-    cd /tmp/yaourt && \
-    yes | sudo -u yaourt makepkg -si && \
-    cd .. && \
-    echo 'EXPORT=2' >> /etc/yaourtrc
-    
+RUN sed 's/^CheckSpace/#CheckSpace/g' -i /etc/pacman.conf
+RUN pacman --quiet --noconfirm -Syu
+RUN pacman --quiet --noconfirm -S base-devel
+RUN pacman --quiet --noconfirm -S yajl
+
+
+WORKDIR /tmp/scratch
+RUN curl https://aur.archlinux.org/packages/pa/package-query/package-query.tar.gz | tar zx
+WORKDIR /tmp/scratch/package-query
+RUN makepkg --asroot --noconfirm -i
+
+WORKDIR /tmp/scratch
+RUN curl https://aur.archlinux.org/packages/ya/yaourt/yaourt.tar.gz | tar zx
+WORKDIR /tmp/scratch/yaourt
+RUN makepkg --asroot --noconfirm -i
+
 # Update yaourt
 RUN yaourt -Syy --noconfirm
 
