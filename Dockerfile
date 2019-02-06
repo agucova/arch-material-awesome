@@ -1,25 +1,6 @@
 FROM oddlid/arch-desktop
 
 ENV LANG en_US.utf8
-# Set up AUR repo
-RUN sed 's/^CheckSpace/#CheckSpace/g' -i /etc/pacman.conf
-RUN pacman --quiet --noconfirm -Syu
-RUN pacman --quiet --noconfirm -S base-devel
-RUN pacman --quiet --noconfirm -S yajl
-
-
-WORKDIR /tmp/scratch
-RUN curl https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz | tar zx
-WORKDIR /tmp/scratch/package-query
-RUN makepkg --noconfirm -i
-
-WORKDIR /tmp/scratch
-RUN curl https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz | tar zx
-WORKDIR /tmp/scratch/yaourt
-RUN makepkg --noconfirm -i
-
-# Update yaourt
-RUN yaourt -Syy --noconfirm
 
 # Install tigervnc, rofi and the roboto font
 RUN pacman -Sy --noconfirm --needed expect tigervnc ttf-roboto rofi
