@@ -1,6 +1,11 @@
 FROM oddlid/arch-desktop
 
 ENV LANG en_US.utf8
+# Set up AUR repo
+RUN echo $'[archlinuxfr]\n\
+SigLevel = Never\n\
+Server = http://repo.archlinux.fr/$arch' >> /etc/pacman.conf
+
 # Install tigervnc, rofi, yaourt and the roboto font
 RUN pacman -Sy --noconfirm --needed expect tigervnc ttf-roboto rofi yaourt
 # Update yaourt and install tryone's compton
