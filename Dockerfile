@@ -2,14 +2,25 @@ FROM oddlid/arch-desktop
 
 ENV LANG en_US.utf8
 # Set up AUR repo
-RUN echo $'[archlinuxfr]\n\
-SigLevel = Never\n\
-Server = http://repo.archlinux.fr/$arch' >> /etc/pacman.conf
-
-# Install tigervnc, rofi, yaourt and the roboto font
-RUN pacman -Sy --noconfirm --needed expect tigervnc ttf-roboto rofi yaourt
-# Update yaourt and install tryone's compton
+RUN sudo -u yaourt rm -rf /tmp/package-query && \
+    sudo -u yaourt rm -rf /tmp/yaourt && \
+    cd /tmp && \
+    sudo -u yaourt git clone https://aur.archlinux.org/package-query.git && \
+    cd /tmp/package-query && \
+    yes | sudo -u yaourt makepkg -si && \
+    cd .. && \
+    sudo -u yaourt git clone https://aur.archlinux.org/yaourt.git && \
+    cd /tmp/yaourt && \
+    yes | sudo -u yaourt makepkg -si && \
+    cd .. && \
+    echo 'EXPORT=2' >> /etc/yaourtrc
+    
+# Update yaourt
 RUN yaourt -Syy --noconfirm
+
+# Install tigervnc, rofi and the roboto font
+RUN pacman -Sy --noconfirm --needed expect tigervnc ttf-roboto rofi
+# Install tryone's compton
 RUN yaourt -S --noconfirm compton-tryone-git
 
 # Install materia theme
